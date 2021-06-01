@@ -1,0 +1,10 @@
+apikey: "123"
+maxTokenNumber: 2
+server:
+  name: "Push Notifications server"
+  version: "0.0.1.0b"
+  host:
+  port: 8009
+mongo:
+  uri: "mongodb://goPush-data:27017"
+  name: "gopush"
