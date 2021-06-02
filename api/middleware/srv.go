@@ -22,7 +22,7 @@ func NewServer(routes Routes) *goPushServer {
 		port:      config.GetString("server.port"),
 	}
 	server.defaultHandler = alice.New(
-		server.logging, server.cors, server.authorization,
+		server.logging, server.recovery, server.cors, server.authorization,
 	).Then(server.executor())
 
 	return server
