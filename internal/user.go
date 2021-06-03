@@ -12,6 +12,8 @@ type RegisterRequest struct {
 
 func Register(repo r.UserRepo, request RegisterRequest) error {
 
+	// если пользователь есть - добавляем ему девайс
+	// если нет - создаем нового пользователя
 	user, err := repo.Get(request.UserId)
 
 	if err == nil {

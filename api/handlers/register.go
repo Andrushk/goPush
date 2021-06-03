@@ -14,10 +14,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	err = logic.Register(&repo.UserMngRepo{}, requestData)
+	err = logic.Register(repo.NewMngFactory().UserRepo(), requestData)
 	if err != nil {
 		panic(err)
 	}
-
-	//w.Write([]byte("not implemented"))
 }
