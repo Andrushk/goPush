@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Development container. Runs in debug mode and live-reloading on every source file update.
   develop:
-    hostname: goPush-dev
+    hostname: gopush-dev
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,21 +14,21 @@ services:
     cap_add:
       - SYS_PTRACE
     volumes:
-      - .:/goPush
-    working_dir: /goPush
+      - .:/gopush
+    working_dir: /gopush
     ports:
       - "8009:8009"  # Opened ports
       - "40000:40000"  # Opened ports
     links:
-      - goPush-data
+      - gopush-data
     command: bash -c "go mod download && make serve"
 
-  goPush-data:
+  gopush-data:
     image: mongo:4.4
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
-      - MONGODB_DATABASE=goPush
+      - MONGODB_DATABASE=gopush
     volumes:
       - ./.data/db:/data/db
     command: mongod --logpath=/dev/null # --quiet
