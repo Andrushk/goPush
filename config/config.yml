@@ -1,10 +1,15 @@
+# этот ключ goPush будет ждать в Header Rest-запроса
 apikey: "123"
+# максимальное кол-во токенов на один тип устройства пользователя
+# если кол-во будет превышено, то самый старый токен будет удален
 maxTokenNumber: 2
+#
 server:
   name: "Push Notifications server"
   version: "0.0.1.0b"
   host:
   port: 8009
+# место хранения данных по пользователям и их токенам
 mongo:
   uri: "mongodb://goPush-data:27017"
   name: "gopush"
