@@ -5,7 +5,7 @@
 
 ```
 curl --location --request POST 'http://localhost:8009/register' \
---header 'key: <your goPush server application key (look goPush settings)>' \
+--header 'key: <apikey from goPush settings>' \
 --header 'Content-Type: text/plain' \
 --data-raw '{
     "UserId": "<user id from your system>",
@@ -15,5 +15,26 @@ curl --location --request POST 'http://localhost:8009/register' \
 ```
 
 ## Отправить
+отправить сообщение на все устройства пользователя
 
-POST:send - отправить сообщение пользователю
+```
+curl --location --request POST 'http://localhost:8009/send' \
+--header 'Content-Type: application/json' \
+--header 'key: <apikey from goPush settings>' \
+--data-raw '{
+    "Notification": {
+        "title": "Hello",
+        "body": "Hello world"
+    },
+    "Userid" : "<user id from your system>"
+}'
+```
+
+## Данные пользователя
+проверить зарегистрирован ли пользователь и какие у него есть устройства
+
+```
+curl --location --request GET 'http://localhost:8009/user?id=<user id from your system>' \
+--header 'key: <apikey from goPush settings>' \
+--data-raw ''
+```
