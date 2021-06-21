@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	logic "github.com/Andrushk/goPush/internal"
-	repo "github.com/Andrushk/goPush/infrastructure/repositories/mongo"
+	"github.com/Andrushk/goPush/internal/repositories/mongo"
 	"net/http"
 )
 
@@ -14,7 +14,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	err = logic.Register(repo.NewMngFactory().UserRepo(), requestData)
+	err = logic.Register(mongo.NewMngFactory().UserRepo(), requestData)
 	if err != nil {
 		panic(err)
 	}

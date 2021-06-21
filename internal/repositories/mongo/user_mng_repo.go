@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/Andrushk/goPush/entity"
-	"github.com/Andrushk/goPush/infrastructure/repositories/mongo/data"
+	"github.com/Andrushk/goPush/internal/repositories/mongo/data"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

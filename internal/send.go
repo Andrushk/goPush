@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Andrushk/goPush/entity"
-	r "github.com/Andrushk/goPush/infrastructure/repositories"
+	r "github.com/Andrushk/goPush/internal/repositories"
 	p "github.com/Andrushk/goPush/internal/messaging"
 )
 

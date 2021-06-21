@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/Andrushk/goPush/entity"
-	r "github.com/Andrushk/goPush/infrastructure/repositories"
+	r "github.com/Andrushk/goPush/internal/repositories"
 )
 
 type RegisterRequest struct {

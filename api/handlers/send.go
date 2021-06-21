@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	repo "github.com/Andrushk/goPush/infrastructure/repositories/mongo"
 	logic "github.com/Andrushk/goPush/internal"
+	"github.com/Andrushk/goPush/internal/repositories/mongo"
 	"github.com/Andrushk/goPush/internal/messaging/gofcm"
 	"net/http"
 )
@@ -18,7 +18,7 @@ func Send(w http.ResponseWriter, r *http.Request) {
 
 	err = logic.Send(
 		gofcm.NewPostman(),
-		repo.NewMngFactory().UserRepo(),
+		mongo.NewMngFactory().UserRepo(),
 		requestData,
 	)
 

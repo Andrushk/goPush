@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Andrushk/goPush/entity"
-	repo "github.com/Andrushk/goPush/infrastructure/repositories/mongo"
+	"github.com/Andrushk/goPush/internal/repositories/mongo"
 	logic "github.com/Andrushk/goPush/internal"
 )
 
@@ -15,7 +15,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		panic("не указан id пользователя")
 	}
 
-	user, err := logic.GetUser(repo.NewMngFactory().UserRepo(), id[0])
+	user, err := logic.GetUser(mongo.NewMngFactory().UserRepo(), id[0])
 	if err != nil {	
 		panic(err)
 	}
