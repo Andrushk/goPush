@@ -16,7 +16,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := logic.GetUser(repo.NewMngFactory().UserRepo(), id[0])
-	if err != nil {
+	if err != nil {	
 		panic(err)
 	}
 
