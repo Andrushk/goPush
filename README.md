@@ -20,7 +20,7 @@ curl --location --request POST 'http://localhost:8009/register' \
 отправить сообщение на все устройства пользователя
 
 ```
-curl --location --request POST 'http://localhost:8009/send' \
+curl --location --request POST 'http://localhost:8009/send/user' \
 --header 'Content-Type: application/json' \
 --header 'key: <apikey from goPush settings>' \
 --data-raw '{

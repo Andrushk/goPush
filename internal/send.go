@@ -18,8 +18,8 @@ type NotificationRequest struct {
 	Body  string `json:"body"`
 }
 
-//todo правильнее назвать SentTo это и эндпоинта касается
-func Send(postman p.Postman, repo r.UserRepo, request SendRequest) error {
+// Отправить PUSH одному пользователю на все его девайсы
+func SendToUser(postman p.Postman, repo r.UserRepo, request SendRequest) error {
 	user, err := repo.Get(entity.StrToID(request.UserId))
 
 	if err == nil {

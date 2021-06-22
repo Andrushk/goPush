@@ -8,7 +8,8 @@ import (
 	"net/http"
 )
 
-func Send(w http.ResponseWriter, r *http.Request) {
+// Отправить PUSH одному пользователю на все его девайсы
+func SendToUser(w http.ResponseWriter, r *http.Request) {
 
 	var requestData logic.SendRequest
 	err := json.NewDecoder(r.Body).Decode(&requestData)
@@ -16,7 +17,7 @@ func Send(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	err = logic.Send(
+	err = logic.SendToUser(
 		gofcm.NewPostman(),
 		mongo.NewMngFactory().UserRepo(),
 		requestData,
