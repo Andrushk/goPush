@@ -8,7 +8,7 @@ import (
 func (app *goPushServer) authorization(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("key")
-		if apiKey != config.GetString("apikey") {
+		if apiKey != config.GetString("goPush.apikey") {
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 			next.ServeHTTP(w, r)

@@ -14,8 +14,8 @@ type Info struct {
 func Ping(w http.ResponseWriter, r *http.Request) {
 	w.Write(
 		entity.ToByte(&Info{
-			ServerName: config.GetString("server.name"),
-			Version:    config.GetString("server.version"),
+			ServerName: config.GetString("goPush.name"),
+			Version:    config.GetString("goPush.version"),
 		}),
 	)
 }

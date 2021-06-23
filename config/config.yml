@@ -1,22 +1,20 @@
-# этот ключ goPush будет ждать в Header Rest-запроса
-apikey: "123"
-
-# Authorization ключ для FCM
-fcmServerKey: "AAAAV0TezwY:APA91bFMH3K0CdOBqtVCVPKifTuOZ3ObVKGs2BbAFTlXELPt5yiIpInwjYQm96rhBLnWz1_Zm3wFrybzefG0-NvClhwc-DgfE0w_t7VIWGh7bJO0vNlRowUfGz0ej973R02lPVbpDNSk"
-
-# максимальное кол-во токенов на один тип устройства пользователя
-# если кол-во будет превышено, то самый старый токен будет удален
-# пока НЕ ИСПОЛЬЗУЕТСЯ
-maxTokenNumber: 2
-
-#
-server:
+# настройки непосредственно goPush
+goPush:
   name: "Push Notifications server"
   version: "0.0.1.0b"
   host:
   port: 8009
+  # этот ключ goPush будет ждать в Header Rest-запроса
+  apikey: "123"
+  # максимальное кол-во токенов на один тип устройства пользователя
+  # если кол-во будет превышено, то самый старый токен будет удален
+  # пока НЕ ИСПОЛЬЗУЕТСЯ
+  maxTokenNumber: 2
+
+# Authorization ключ для FCM
+fcmServerKey: "AAAAV0Tez..."
   
-# место хранения данных по пользователям и их токенам
+# место хранения данных по пользователям и токенам их девайсов
 mongo:
   uri: "mongodb://goPush-data:27017"
   name: "gopush"

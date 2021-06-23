@@ -18,8 +18,8 @@ type goPushServer struct {
 func NewServer(routes Routes) *goPushServer {
 	server := &goPushServer{
 		endpoints: routes,
-		host:      config.GetString("server.host"),
-		port:      config.GetString("server.port"),
+		host:      config.GetString("goPush.host"),
+		port:      config.GetString("goPush.port"),
 	}
 	server.defaultHandler = alice.New(
 		server.logging, server.recovery, server.cors, server.authorization,
