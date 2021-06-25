@@ -19,9 +19,26 @@ services:
     ports:
       - "8009:8009"  # Opened ports
       - "40000:40000"  # Opened ports
-    links:
+    depends_on:
       - gopush-data
     command: bash -c "go mod download && make serve"
+
+  # Production container.
+  prod:
+    hostname: gopush
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    environment:
+      SERVING_PORT: ":8809"
+    working_dir: /gopush
+    ports:
+      - "8809:8809"  # Opened ports
+    depends_on:
+      - gopush-data
+    command: ./gopush
 
   gopush-data:
     image: mongo:4.4
