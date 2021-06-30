@@ -10,6 +10,7 @@ func Endpoints() middleware.Routes {
 	endpoints.Get("/ping", handlers.Ping)
 	endpoints.Get("/user", handlers.GetUser)
 	endpoints.Post("/register", handlers.Register)
+	endpoints.Post("/unregister", handlers.Unregister)
 	endpoints.Post("/send/user", handlers.SendToUser)
 	return endpoints
 }

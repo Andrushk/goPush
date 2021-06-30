@@ -14,6 +14,11 @@ type RegisterRequest struct {
 	Device   string `json:"Device"`
 }
 
+type UnregisterRequest struct {
+	UserId   string `json:"UserId"`
+	FcmToken string `json:"FcmToken"`
+}
+
 func Register(repo r.UserRepo, request RegisterRequest) error {
 
 	// если пользователь есть - добавляем ему девайс
@@ -36,6 +41,17 @@ func Register(repo r.UserRepo, request RegisterRequest) error {
 		//todo если для данного пользователя и типа Device еще не превышено кол-во токенов (см конфиг: maxTokenNumber), то добавить токен
 		//todo если кол-во превышено, то удалить самый старый токен
 		user.Devices = []entity.Device{{DeviceName: request.Device, Token: request.FcmToken, Registered: time.Now()}}
+		err = repo.Update(user)
+	}
+
+	return err
+}
+
+func Unregister(repo r.UserRepo, request UnregisterRequest) error {
+	//todo если пользователь или токен не найдены возврщать Not Found? или может быть надо возвращать кол-во разрегистрированных девайсов?
+	user, err := repo.Get(entity.StrToID(request.UserId))
+	if err == nil && user.Id != "" {
+		user.RemoveDevice(request.FcmToken)
 		err = repo.Update(user)
 	}
 
