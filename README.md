@@ -16,6 +16,19 @@ curl --location --request POST 'http://localhost:8009/register' \
 }'
 ```
 
+## Отменить регистрацию
+Отвязать (удалить а базе) токен устройства от пользователя
+
+```
+curl --location --request POST 'http://localhost:8009/unregister' \
+--header 'key: <apikey from goPush settings>' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "UserId": "<user id from your system>",
+    "FcmToken": "<Firebase device token>"
+}'
+```
+
 ## Отправить
 отправить сообщение на все устройства пользователя
 
