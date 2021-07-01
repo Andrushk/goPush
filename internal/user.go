@@ -40,7 +40,7 @@ func Register(repo r.UserRepo, request RegisterRequest) error {
 		//todo необходимо реализовать следующее поведение:
 		//todo если для данного пользователя и типа Device еще не превышено кол-во токенов (см конфиг: maxTokenNumber), то добавить токен
 		//todo если кол-во превышено, то удалить самый старый токен
-		user.Devices = []entity.Device{{DeviceName: request.Device, Token: request.FcmToken, Registered: time.Now()}}
+		user.Devices = []entity.Device{{DeviceType: request.Device, Token: request.FcmToken, Registered: time.Now()}}
 		err = repo.Update(user)
 	}
 
