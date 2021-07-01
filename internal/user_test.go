@@ -105,7 +105,7 @@ func TestUnregisterOneDevice(t *testing.T) {
 	}
 
 	//2. пробуем удалить несуществующий токен у реального пользователя
-	for _, testToken := range []string{"token", "", " "}{
+	for _, testToken := range []string{"token", "", " "} {
 		request := UnregisterRequest{UserId: user.Id.String(), FcmToken: testToken}
 		err := Unregister(repo, request)
 
@@ -148,5 +148,64 @@ func TestUnregisterOneDevice(t *testing.T) {
 
 	if len(repoUser.Devices) > 0 {
 		t.Fatal("Девайс не удалился")
+	}
+}
+
+// репо содержит одного пользователя и несколько девайсов, пробуем удалить один девайс
+func TestUnregisterManyDevices(t *testing.T) {
+	deviceWeb := entity.NewDeviceNow("web", "tokenWeb")
+	deviceAndroid1 := entity.NewDeviceNow("android", "1")
+	deviceAndroid2 := entity.NewDeviceNow("android", "2")
+	user := entity.User{Id: "user1", Devices: []entity.Device{*deviceWeb, *deviceAndroid1, *deviceAndroid2}}
+
+	repo := inmemory.UserRepo()
+	repo.Add(user)
+
+	if repo.Count() != 1 {
+		t.Fatal("Для теста репо должен содержать одного пользователя")
+	}
+
+	// достаем пользователя из репо, убеждаемся, что начальные условия правильные
+	repoUser, repoErr := repo.Get(user.Id)
+
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if repoUser.Id == "" {
+		t.Fatal("Не найден тестовый пользователь")
+	}
+
+	if len(repoUser.Devices) != 3 {
+		t.Fatal("В начале теста у пользователя должно быть три девайса")
+	}
+
+	// удаляем один девайс
+	request := UnregisterRequest{UserId: user.Id.String(), FcmToken: deviceAndroid2.Token}
+	err := Unregister(repo, request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repoUser, repoErr = repo.Get(user.Id)
+
+	if len(repoUser.Devices) != 2 {
+		t.Fatalf("Должено было остаться два девайса, а осталось %v", len(repoUser.Devices))
+	}
+
+	// теперь проверяем, что не просто осталось 2 девайса, а остались какие надо
+	for _, checkToken := range []string{deviceWeb.Token, deviceAndroid1.Token} {
+
+		findedDeveice := entity.Device{}
+		for _, checkDevice := range repoUser.Devices {
+			if checkDevice.Token == checkToken {
+				findedDeveice = checkDevice
+				break
+			}
+		}
+		if findedDeveice.Token == "" {
+			t.Fatalf("Не найден девайс: %v", checkToken)
+		}
 	}
 }
