@@ -1,6 +1,9 @@
 package entity
 
-import "strings"
+import (
+	"fmt"
+	"strings")
+
 
 type User struct {
 	Id      ID
@@ -26,11 +29,13 @@ func (u *User) DeviceTypeState(deviceType string) (int, *Device) {
 	count := 0
 	var oldest *Device
 
-	for _, device := range u.Devices {
+	for i, device := range u.Devices {
 		if strings.EqualFold(device.DeviceType, deviceType) {
+			fmt.Printf("! device: %v", oldest)
+			fmt.Println("")
 			count++
 			if oldest == nil || oldest.Registered.After(device.Registered) {
-				oldest = &device
+				oldest = &u.Devices[i]
 			}
 		}
 	}
