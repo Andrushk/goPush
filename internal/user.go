@@ -1,9 +1,12 @@
 package internal
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"time"
 
+	c "github.com/Andrushk/goPush/config"
 	"github.com/Andrushk/goPush/entity"
 	r "github.com/Andrushk/goPush/internal/repositories"
 )
@@ -19,29 +22,48 @@ type UnregisterRequest struct {
 	FcmToken string `json:"FcmToken"`
 }
 
-func Register(repo r.UserRepo, request RegisterRequest) error {
+func Register(config c.AppConfig, repo r.UserRepo, request RegisterRequest) error {
 
 	// если пользователь есть - добавляем ему девайс
 	// если нет - создаем нового пользователя
 	user, err := repo.Get(entity.StrToID(request.UserId))
 
 	if err == nil {
-		log.Printf("user: [%v] [%v]", user.Id, user)
+		//log.Printf("user: [%v] [%v]", user.Id, user)
 
 		// не нашли пользователя - добавляем
 		if user.Id == "" {
 			user = *entity.NewUser(request.UserId)
+			user.Devices = []entity.Device{*entity.NewDeviceNow(request.Device, request.FcmToken)}
 			err = repo.Add(user)
 			if err == nil {
 				log.Printf("user id[%v] not found, new user created", request.UserId)
 			}
-		}
+		} else {
+			//log.Printf("пробуем найти девайсы у пользователя, тип %v", request.Device)
+			deviceCount, oldest := user.DeviceTypeState(request.Device)
+			//log.Printf("у пользователя таких девайсов %v, самый старый %v", deviceCount, oldest)
 
-		//todo необходимо реализовать следующее поведение:
-		//todo если для данного пользователя и типа Device еще не превышено кол-во токенов (см конфиг: maxTokenNumber), то добавить токен
-		//todo если кол-во превышено, то удалить самый старый токен
-		user.Devices = []entity.Device{{DeviceType: request.Device, Token: request.FcmToken, Registered: time.Now()}}
-		err = repo.Update(user)
+			maxTokenNumber := config.GetInt("goPush.maxTokenNumber")
+			if maxTokenNumber < 1 {
+				return errors.New(fmt.Sprintf("maxTokenNumber should be more than zero, current value is %v", maxTokenNumber))
+			}
+
+			//реализовано следующее поведение:
+			//- если для данного пользователя и типа Device еще не превышено кол-во токенов, то добавить токен
+			//- если кол-во превышено, то удалить самый старый токен
+			if deviceCount >= maxTokenNumber {
+				oldest.DeviceType = request.Device
+				oldest.Token = request.FcmToken
+				oldest.Registered = time.Now()
+			} else {
+				//log.Printf("уже есть девайсов: %v, список: %v", len(user.Devices), user.Devices)
+				user.Devices = append(user.Devices, *entity.NewDeviceNow(request.Device, request.FcmToken))
+				//log.Printf("коллекция девайсов после append: %v", user.Devices)
+			}
+
+			err = repo.Update(user)
+		}
 	}
 
 	return err

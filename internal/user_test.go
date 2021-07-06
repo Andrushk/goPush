@@ -1,9 +1,13 @@
 package internal
 
 import (
+	"fmt"
+	"math"
+	"testing"
+	"time"
+
 	"github.com/Andrushk/goPush/entity"
 	"github.com/Andrushk/goPush/internal/repositories/inmemory"
-	"testing"
 )
 
 // репо вообще не содержит пользователей, просим удалить какой-то девайс
@@ -207,5 +211,121 @@ func TestUnregisterManyDevices(t *testing.T) {
 		if findedDeveice.Token == "" {
 			t.Fatalf("Не найден девайс: %v", checkToken)
 		}
+	}
+}
+
+// регистрируем одного пользователя с одним девайсом
+func TestRegisterNewUser(t *testing.T) {
+	request := RegisterRequest{UserId: "user1", Device: "Android", FcmToken: "token1"}
+	repo := inmemory.UserRepo()
+
+	err := Register(nil, repo, request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if repo.Count() != 1 {
+		t.Fatalf("В репо должен быть один пользователь, а фактически %v", repo.Count())
+	}
+
+	repoUser, repoErr := repo.Get(entity.ID(request.UserId))
+
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if len(repoUser.Devices) != 1 {
+		t.Fatalf("У пользователя должен быть один девайс, а фактически %v", len(repoUser.Devices))
+	}
+
+	//проверим, что данные девайса именно те, что добавляли, в том числе время добавление (не точно, просто рядом)
+	repoDevice := repoUser.Devices[0]
+	if repoDevice.DeviceType != request.Device || repoDevice.Token != request.FcmToken || math.Abs(repoDevice.Registered.Sub(time.Now()).Seconds()) > 5 {
+		t.Fatalf("Девайс добавлен неверно, значение в репо: %v", repoDevice)
+	}
+}
+
+// TODO замокать конфиг при помощи какого-нито пакета.
+type OneTokenMockConfig struct {
+}
+
+func (m *OneTokenMockConfig) GetString(name string) string {
+	return ""
+}
+
+func (m *OneTokenMockConfig) GetInt(name string) int {
+	return 1
+}
+
+// 10 раз регистрируем для одного пользователя разные токены с одним типом левайса, провреям, что в репо остается только послдений девайс
+func TestRegisterOneTypeDevices(t *testing.T) {
+	userName := "user10"
+	deviceType := "Android"
+	token := "token"
+
+	repo := inmemory.UserRepo()
+	config := &OneTokenMockConfig{} // всегда возвращает maxTokenNumber = 1
+
+	for i := 0; i < 10; i++ {
+		request := RegisterRequest{UserId: userName, Device: deviceType, FcmToken: fmt.Sprintf("%v%v", token, i)}
+		err := Register(config, repo, request)
+
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if repo.Count() != 1 {
+		t.Fatalf("В репо должен быть один пользователь, а фактически %v", repo.Count())
+	}
+
+	repoUser, repoErr := repo.Get(entity.ID(userName))
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if len(repoUser.Devices) != 1 {
+		t.Fatalf("У пользователя должен быть один девайс, а фактически %v", len(repoUser.Devices))
+	}
+
+	//проверим, что данные девайса именно те, что добавляли и это последний из добавленных девайсов
+	repoDevice := repoUser.Devices[0]
+	if repoDevice.DeviceType != deviceType || repoDevice.Token !=  fmt.Sprintf("%v9", token) {
+		t.Fatalf("Девайс добавлен неверно, значение в репо: %v", repoDevice)
+	}
+}
+
+// регистрируем для одного пользователя два девайса разного типа, проверяем, что сохраняться оба
+func TestRegisterTwoDevices(t *testing.T) {
+	requestAndroid := RegisterRequest{UserId: "user", Device: "Android", FcmToken: "tokenAndroid"}
+	requestweb := RegisterRequest{UserId: "user", Device: "Web", FcmToken: "tokenWeb"}
+
+	repo := inmemory.UserRepo()
+	config := &OneTokenMockConfig{} // всегда возвращает maxTokenNumber = 1
+
+	err := Register(config, repo, requestAndroid)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = Register(config, repo, requestweb)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if repo.Count() != 1 {
+		t.Fatalf("В репо должен быть один пользователь, а фактически %v", repo.Count())
+	}
+
+	repoUser, repoErr := repo.Get(entity.ID(requestweb.UserId))
+
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if len(repoUser.Devices) != 2 {
+		t.Fatalf("У пользователя должено быть два девайса, а фактически %v", len(repoUser.Devices))
 	}
 }

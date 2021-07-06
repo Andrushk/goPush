@@ -1,9 +1,8 @@
 package entity
 
 import (
-	"fmt"
-	"strings")
-
+	"strings"
+)
 
 type User struct {
 	Id      ID
@@ -27,12 +26,12 @@ func (u *User) RemoveDevice(deviceToken string) {
 // Возвращает кол-во девайсов заданного типа и самый старый девайс в этом типе
 func (u *User) DeviceTypeState(deviceType string) (int, *Device) {
 	count := 0
-	var oldest *Device
+	var oldest *Device = nil
 
+	//log.Printf("Поиск среди девайсов: %v", u.Devices)
 	for i, device := range u.Devices {
+		//log.Printf("Сравниваем [%v] и [%v]", device.DeviceType, deviceType)
 		if strings.EqualFold(device.DeviceType, deviceType) {
-			fmt.Printf("! device: %v", oldest)
-			fmt.Println("")
 			count++
 			if oldest == nil || oldest.Registered.After(device.Registered) {
 				oldest = &u.Devices[i]
@@ -40,5 +39,6 @@ func (u *User) DeviceTypeState(deviceType string) (int, *Device) {
 		}
 	}
 
+	//log.Printf("Нормальный выход из цикла, count=%v, oldest=%v", count, oldest)
 	return count, oldest
 }
