@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Andrushk/goPush/entity"
-	r "github.com/Andrushk/goPush/internal/repositories"
 	p "github.com/Andrushk/goPush/internal/messaging"
+	r "github.com/Andrushk/goPush/internal/repositories"
 )
 
 type SendRequest struct {
@@ -26,10 +26,14 @@ func SendToUser(postman p.Postman, repo r.UserRepo, request SendRequest) error {
 		if user.Id == "" {
 			err = fmt.Errorf("user id[%v] not found", request.UserId)
 		} else {
+			tokens := []string{}
+			for _, device := range user.Devices {
+				tokens = append(tokens, device.Token)
+			}
 
-			//todo допилить отправку на все девайсы данного пользователя
-			err = postman.SendOne(
-				user.Devices[0].Token,
+			//log.Printf("send to tokens: %v", tokens)
+			err = postman.Send(
+				tokens,
 				entity.PushMessage{
 					Title: request.Notification.Title,
 					Body:  request.Notification.Body},

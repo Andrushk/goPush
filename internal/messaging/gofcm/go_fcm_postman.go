@@ -40,3 +40,14 @@ func (p *GoFcmPostman) SendOne(token string, message entity.PushMessage) error {
 	}
 	return nil
 }
+
+// Отправить одно сообщение на несколько устройств
+func (p *GoFcmPostman) Send(tokens []string, message entity.PushMessage) error {
+	for _, token := range tokens {
+		err := p.SendOne(token, message)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

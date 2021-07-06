@@ -6,6 +6,7 @@ import (
 	"github.com/Andrushk/goPush/entity"
 )
 
+// Реализация UserRepo (Mock для тестирования) 
 type UserMemoryRepo struct {
 	users []entity.User
 }
