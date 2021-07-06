@@ -1,7 +1,7 @@
 # настройки непосредственно goPush
 goPush:
   name: "Push Notifications server"
-  version: "0.0.1.0b"
+  version: "0.0.1.1b"
   host:
   port: 8009
   # этот ключ goPush будет ждать в Header Rest-запроса
