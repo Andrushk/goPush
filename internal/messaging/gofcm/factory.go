@@ -8,7 +8,9 @@ import (
 )
 
 func NewPostman() *GoFcmPostman {
-	client, err := fcm.NewClient(config.GetString("fcmServerKey"))
+	fcmServerKey :=config.GetString("goPush.fcmServerKey")
+	//log.Printf("fcm api key: %v", fcmServerKey)
+	client, err := fcm.NewClient(fcmServerKey)
 	if err!=nil {
 		panic(err)
 	}

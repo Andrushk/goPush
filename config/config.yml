@@ -10,9 +10,8 @@ goPush:
   # если кол-во будет превышено, то самый старый токен будет удален
   # пока НЕ ИСПОЛЬЗУЕТСЯ
   maxTokenNumber: 2
-
-# Authorization ключ для FCM
-fcmServerKey: "AAAAV0Tez..."
+  # Authorization ключ для FCM
+  fcmServerKey: "AAAAV0Tez..."
   
 # место хранения данных по пользователям и токенам их девайсов
 mongo:

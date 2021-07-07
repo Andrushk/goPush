@@ -15,7 +15,7 @@ type GoFcmPostman struct {
 
 // Отправить одно сообщение на одно устройство по идентификатору этого устройства
 func (p *GoFcmPostman) SendOne(token string, message entity.PushMessage) error {
-
+	//log.Printf("try sent to token: %v", token)
 	msg := &fcm.Message{
 		To: token,
 		Notification: &fcm.Notification{
