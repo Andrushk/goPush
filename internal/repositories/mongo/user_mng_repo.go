@@ -37,10 +37,7 @@ func (u *UserMngRepo) Add(user entity.User) error {
 func (u *UserMngRepo) Update(user entity.User) error {
 
 	id, _ := primitive.ObjectIDFromHex(user.Id.String())
-	var devices []data.Device
-	for _, x := range user.Devices {
-		devices = append(devices, data.DeviceFromModel(x))
-	}
+	devices := data.DevicesFromModel(user.Devices)
 
 	_, err := u.users.UpdateByID(u.ctx, id, bson.D{
 		{"$set", bson.D{{"devices", devices}}},
