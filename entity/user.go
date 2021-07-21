@@ -15,12 +15,30 @@ func NewUser(id string) *User {
 
 // Находит девайс в коллекции девайсов пользователя (по токену) и удаляет его
 func (u *User) RemoveDevice(deviceToken string) {
-	for i, d := range u.Devices {
-		if d.Token == deviceToken {
+	for i := 0; i < len(u.Devices); i++ {
+		if u.Devices[i].Token == deviceToken {
 			u.Devices = append(u.Devices[:i], u.Devices[i+1:]...)
-			break
+			i--
 		}
 	}
+
+	// Удаление только первого вхождения deviceToken
+	// for i, d := range u.Devices {
+	// 	if d.Token == deviceToken {
+	// 		u.Devices = append(u.Devices[:i], u.Devices[i+1:]...)
+	// 		break
+	// 	}
+	// }
+}
+
+// Находит девайс в коллекции девайсов пользователя (по токену)
+func (u *User) FindFirstDevice(deviceToken string) *Device {
+	for _, d := range u.Devices {
+		if d.Token == deviceToken {
+			return &d
+		}
+	}
+	return nil
 }
 
 // Возвращает кол-во девайсов заданного типа и самый старый девайс в этом типе

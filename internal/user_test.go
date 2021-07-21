@@ -291,7 +291,7 @@ func TestRegisterOneTypeDevices(t *testing.T) {
 
 	//проверим, что данные девайса именно те, что добавляли и это последний из добавленных девайсов
 	repoDevice := repoUser.Devices[0]
-	if repoDevice.DeviceType != deviceType || repoDevice.Token !=  fmt.Sprintf("%v9", token) {
+	if repoDevice.DeviceType != deviceType || repoDevice.Token != fmt.Sprintf("%v9", token) {
 		t.Fatalf("Девайс добавлен неверно, значение в репо: %v", repoDevice)
 	}
 }
@@ -327,5 +327,97 @@ func TestRegisterTwoDevices(t *testing.T) {
 
 	if len(repoUser.Devices) != 2 {
 		t.Fatalf("У пользователя должено быть два девайса, а фактически %v", len(repoUser.Devices))
+	}
+}
+
+// TODO замокать конфиг при помощи какого-нито пакета (вместе с братом OneTokenMockConfig).
+type TwoTokenMockConfig struct {
+}
+
+func (m *TwoTokenMockConfig) GetString(name string) string {
+	return ""
+}
+
+func (m *TwoTokenMockConfig) GetInt(name string) int {
+	return 2
+}
+
+// регистрируем одного пользователя с одним и тем же девайсом два раза (для случая, когда разрешено два девайса на устройство)
+func TestRegisterDeviceTwice(t *testing.T) {
+	request := RegisterRequest{UserId: "user", Device: "Android", FcmToken: "tokenAndroid"}
+
+	repo := inmemory.UserRepo()
+	config := &TwoTokenMockConfig{} // всегда возвращает maxTokenNumber = 2
+
+	err := Register(config, repo, request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// еще раз регистрируем того же пользователя с тем же девайсом
+	err = Register(config, repo, request)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if repo.Count() != 1 {
+		t.Fatalf("В репо должен быть один пользователь, а фактически %v", repo.Count())
+	}
+
+	repoUser, repoErr := repo.Get(entity.ID(request.UserId))
+
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if len(repoUser.Devices) != 1 {
+		t.Fatalf("У пользователя должен быть один девайс, а фактически %v", len(repoUser.Devices))
+	}
+}
+
+// удаляем девайсы когда есть задвоение токенов (с одним типом девайса и с разным)
+func TestUnregisterDoubledDevice(t *testing.T) {
+	// девайсы разных типов, но токен у них один
+	deviceWeb := entity.NewDeviceNow("web", "token1")
+	deviceAndroid1 := entity.NewDeviceNow("android", "token1")
+
+	// девайс с уникальным токеном
+	deviceAndroid2:= entity.NewDeviceNow("android", "token2")
+
+	// в коллекции девайсов есть задвоение
+	user := entity.User{Id: "user1", Devices: []entity.Device{*deviceWeb, *deviceWeb, *deviceAndroid1, *deviceAndroid2}}
+
+	repo := inmemory.UserRepo()
+	repo.Add(user)
+
+	if repo.Count() != 1 {
+		t.Fatal("Для теста репо должен содержать одного пользователя")
+	}
+
+	if len(user.Devices) != 4 {
+		t.Fatalf("Для теста у пользователя должно быть три девайс, а фактически %v", len(user.Devices))
+	}
+
+	//удаляем токен "token1"
+	request := UnregisterRequest{UserId: user.Id.String(), FcmToken: deviceWeb.Token}
+	err := Unregister(repo, request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	repoUser, repoErr := repo.Get(user.Id)
+
+	if repoErr != nil {
+		t.Fatal(repoErr)
+	}
+
+	if repoUser.Id == "" {
+		t.Fatal("Не найден тестовый пользователь")
+	}
+
+	if len(repoUser.Devices) != 1 {
+		t.Fatalf("Должен остаться один девайс, а фактически %v", len(repoUser.Devices))
 	}
 }
