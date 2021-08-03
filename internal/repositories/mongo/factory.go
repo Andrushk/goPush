@@ -26,7 +26,7 @@ func (m *mngFactory) UserRepo() *UserMngRepo {
 }
 
 func initMonga() *mongo.Database {
-	mongoURI := config.GetString("mongo.uri")
+	mongoURI := config.GetString("goPush.mongo.uri")
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongoURI))
 	if err != nil {
 		//todo добавить mongoURI к ошибке
@@ -42,5 +42,5 @@ func initMonga() *mongo.Database {
 	if err != nil {
 		panic(err)
 	}
-	return client.Database(config.GetString("mongo.name"))
+	return client.Database(config.GetString("goPush.mongo.name"))
 }

@@ -12,8 +12,7 @@ goPush:
   maxTokenNumber: 2
   # Authorization ключ для FCM
   fcmServerKey: "AAAAV0Tez..."
-  
-# место хранения данных по пользователям и токенам их девайсов
-mongo:
-  uri: "mongodb://goPush-data:27017"
-  name: "gopush"
+  # место хранения данных по пользователям и токенам их девайсов
+  mongo:
+    uri: "mongodb://goPush-data:27017"
+    name: "gopush"
